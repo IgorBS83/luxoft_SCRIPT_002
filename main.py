@@ -11,7 +11,7 @@ def start(update,context):
 
 TOKEN = "1503511812:AAGV8h4kSnDmvdz7eVpStAGcEuWrCh_uJC0"
 
-BAD_WORDS = ["fuck","bitch","nigga","bugs","errors","ass"]
+BAD_WORDS = ["fuck","bitch","bugs","errors","ass"]
 
 def bad_words_filter(input_string):
     for bad_word in BAD_WORDS:
@@ -72,38 +72,51 @@ def num_to_words(number):
     return rezult
 
 def calc_expression(input_string):
-    r1 = re.findall(r"\d+\*\d+",input_string)
-    n1 = re.findall(r"\d+\*",input_string)
-    print(n1)
-    n1 = n1[:-1]
-    print(n1)
-    print(r1)
-    # return r1
+    reg_multiply = re.findall(r"\d+[\*\/]\d+",input_string)
+    while reg_multiply != []:
+        if reg_multiply[0].find('*') > 0:
+            n1 = re.findall(r"\d+\*",reg_multiply[0])[0][:-1]
+            n2 = re.findall(r"\*\d+",reg_multiply[0])[0][1:]
+            rezult = int(n1) * int(n2)
+        else:
+            n1 = re.findall(r"\d+\/",reg_multiply[0])[0][:-1]
+            n2 = re.findall(r"\/\d+",reg_multiply[0])[0][1:]
+            rezult = int(int(n1) / int(n2))
 
-calc_expression("25+658*45+1")
-#  print(calc_expression("25+658*45+1"))
-# print(num_to_words(12))
-# print(num_to_words(11))
-# print(num_to_words(10))
-# print(num_to_words(9))
-# print(num_to_words(14))
+        input_string = input_string.replace(reg_multiply[0], str(rezult))
+        reg_multiply = re.findall(r"\d+[\*\/]\d+",input_string)
+    reg_substract = re.findall(r"\d+[\-\+]\d+",input_string)
+    while reg_substract != []:
+        if reg_substract[0].find('-') > 0:
+            n1 = re.findall(r"\d+\-",reg_substract[0])[0][:-1]
+            n2 = re.findall(r"\-\d+",reg_substract[0])[0][1:]
+            rezult = int(n1) - int(n2)
+        else:
+            n1 = re.findall(r"\d+\+",reg_substract[0])[0][:-1]
+            n2 = re.findall(r"\+\d+",reg_substract[0])[0][1:]
+            rezult = int(n1) + int(n2)
+        input_string = input_string.replace(reg_substract[0], str(rezult))
+        reg_substract = re.findall(r"\d+[\-\+]\d+",input_string)
+    return input_string
 
-# def words_filter_handler(update,context): 
-#     update.message.reply_text(bad_words_filter(update.message.text))
+# print(calc_expression("1+5*6/2-3"))
 
-# def num_to_words_handler(update,context): 
-#     update.message.reply_text(num_to_words(int(update.message.text)))
+def words_filter_handler(update,context): 
+    update.message.reply_text(bad_words_filter(update.message.text))
 
-# def calc_expression_handler(update,context): 
-#     update.message.reply_text(calc_expression(update.message.text))
+def num_to_words_handler(update,context): 
+    update.message.reply_text(num_to_words(int(update.message.text)))
 
-# updater = Updater(TOKEN,use_context=True) 
-# dp = updater.dispatcher
+def calc_expression_handler(update,context): 
+    update.message.reply_text(calc_expression(update.message.text))
 
-# dp.add_handler(CommandHandler("start",start))
-# dp.add_handler(MessageHandler(Filters.regex('^filter '),words_filter_handler))
-# dp.add_handler(MessageHandler(Filters.regex('^[0-9]*'),num_to_words_handler))
-# dp.add_handler(MessageHandler(Filters.regex(r'^(\d+[\+\-\*\/]\d+){1}([\+\-\*\/]+\d+)*$'), calc_expression_handler))
+updater = Updater(TOKEN,use_context=True) 
+dp = updater.dispatcher
 
-# updater.start_polling() 
-# updater.idle()
+dp.add_handler(CommandHandler("start",start))
+dp.add_handler(MessageHandler(Filters.regex('^filter '),words_filter_handler))
+dp.add_handler(MessageHandler(Filters.regex('^[0-9]*'),num_to_words_handler))
+dp.add_handler(MessageHandler(Filters.regex(r'^(\d+[\+\-\*\/]\d+){1}([\+\-\*\/]+\d+)*$'), calc_expression_handler))
+
+updater.start_polling() 
+updater.idle()
