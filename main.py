@@ -19,57 +19,38 @@ def bad_words_filter(input_string):
     return input_string
 
 def num_to_words(number):
-    str_number = str(number)
-    rezult = ""
-    digit = str_number[-1]
-    if str_number == '0':
-        rezult = "null"
-    elif digit == '1':
-        rezult = "one"
-    elif digit == '2':
-        rezult = "two"
-    elif digit == '3':
-        rezult = "three"
-    elif digit == '4':
-        rezult = "four"
-    elif digit == '5':
-        rezult = "five"
-    elif digit == '6':
-        rezult = "six"
-    elif digit == '7':
-        rezult = "seven"
-    elif digit == '8':
-        rezult = "eight"
-    elif digit == '9':
-        rezult = "nine"
-    if digit != str_number:
-        digit = str_number[-2:-1]
-        if digit == '1':
-            if str_number[-2:] == "10":
-                rezult = "ten"
-            elif str_number[-2:] == "11":
-                rezult = "eleven"
-            elif str_number[-2:] == "12":
-                rezult = "twelve"
-            else: 
-                rezult = rezult + "teen"
-        elif digit == '2':
-            rezult = "twenty" + rezult
-        elif digit == '3':
-            rezult = "thirty " + rezult
-        elif digit == '4':
-            rezult = "fourty " + rezult
-        elif digit == '5':
-            rezult = "fifty " + rezult
-        elif digit == '6':
-            rezult = "sixty " + rezult
-        elif digit == '7':
-            rezult = "seventy " + rezult
-        elif digit == '8':
-            rezult = "eighty " + rezult
-        elif digit == '9':
-            rezult = "ninety "   + rezult 
-    return rezult
+    a = ("", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "eleven", "twelve", \
+        "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen")
+    b = ("", "","twenty", "thirty", "fourty", "fifty", "sixty", "seventy", "eighty", "ninety")
+    c = ("million", "thousand", "")
+    if number == 0:
+        return "null"
+    elif number > 999999999:
+        return "out of range"
+    else:
+        rezult = ""
+        divider = 1000000
+        for degree in c: 
+            num_loc = int(number / divider)
+            divider = divider / 1000
+            if num_loc > 0:
+                hundreds = int(num_loc / 100) % 10
+                remainder = num_loc % 100
+                if hundreds > 0:
+                    rezult = rezult + " " + a[hundreds] + " hundred"
+                    if hundreds > 1:
+                        rezult += "s"
+                    rezult = rezult + " and"
+                if remainder < 20:
+                    rezult = rezult + " " + a[remainder]
+                else:
+                    rezult = rezult + " " +  b[int(remainder / 10)]
+                    if remainder % 10 != 0:
+                        rezult = rezult + " " +  a[remainder % 10]
+                rezult = rezult + " " + degree
+
+        return rezult
+    return "error"
 
 def calc_expression(input_string):
     reg_multiply = re.findall(r"\d+[\*\/]\d+",input_string)
