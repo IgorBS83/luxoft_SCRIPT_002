@@ -2,6 +2,7 @@ from telegram.ext import Updater, CommandHandler,MessageHandler,Filters,Conversa
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 import re
+import graph
 
 def start(update,context): 
     user = update.message.from_user 
@@ -9,11 +10,8 @@ def start(update,context):
     context.bot.send_message(chat_id = user.id,text = send) 
     update.message.reply_text('Hi')
 
-TOKEN = "1503511812:AAGV8h4kSnDmvdz7eVpStAGcEuWrCh_uJC0"
-
-BAD_WORDS = ["fuck","bitch","bugs","errors","ass"]
-
 def bad_words_filter(input_string):
+    BAD_WORDS = ["fuck","bitch","bugs","errors","ass"]
     for bad_word in BAD_WORDS:
         input_string = input_string.replace(bad_word, "***")
     return input_string
@@ -80,7 +78,7 @@ def calc_expression(input_string):
         reg_substract = re.findall(r"\d+[\-\+]\d+",input_string)
     return input_string
 
-# print(calc_expression("1+5*6/2-3"))
+bot_graph = graph.Graph("v1")
 
 def words_filter_handler(update,context): 
     update.message.reply_text(bad_words_filter(update.message.text))
@@ -91,13 +89,20 @@ def num_to_words_handler(update,context):
 def calc_expression_handler(update,context): 
     update.message.reply_text(calc_expression(update.message.text))
 
-updater = Updater(TOKEN,use_context=True) 
-dp = updater.dispatcher
+def work_with_graph_handler(update,context): 
+    update.message.reply_text(calc_expression(update.message.text))
 
-dp.add_handler(CommandHandler("start",start))
-dp.add_handler(MessageHandler(Filters.regex('^filter '),words_filter_handler))
-dp.add_handler(MessageHandler(Filters.regex('^[0-9]*'),num_to_words_handler))
-dp.add_handler(MessageHandler(Filters.regex(r'^(\d+[\+\-\*\/]\d+){1}([\+\-\*\/]+\d+)*$'), calc_expression_handler))
 
-updater.start_polling() 
-updater.idle()
+# TOKEN = "1503511812:AAGV8h4kSnDmvdz7eVpStAGcEuWrCh_uJC0"
+
+# updater = Updater(TOKEN,use_context=True) 
+# dp = updater.dispatcher
+
+# dp.add_handler(CommandHandler("start",start))
+# dp.add_handler(MessageHandler(Filters.regex('^filter '),words_filter_handler))
+# dp.add_handler(MessageHandler(Filters.regex('^[0-9]+$'),num_to_words_handler))
+# dp.add_handler(MessageHandler(Filters.regex(r'^(\d+[\+\-\*\/]\d+){1}([\+\-\*\/]+\d+)*$'), calc_expression_handler))
+# dp.add_handler(MessageHandler(Filters.regex('^add|go'),work_with_graph_handler))
+
+# updater.start_polling() 
+# updater.idle()
